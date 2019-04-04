@@ -43,7 +43,10 @@ Trestle.init(function(e, root) {
           // Focus the correct tab
           Trestle.focusActiveTab();
         }
-      } else {
+      }else if(e.target.dataset.disableModal) {
+        //TODO: 允许自定义javascript响应，支持BootBox
+        console.log("启用了禁止默认弹窗，因此此处跳过弹窗")
+      }else {
         // Assume an error response
         var title = xhr.status + " (" + xhr.statusText + ")";
         Trestle.Dialog.showError(title, xhr.responseText);
@@ -52,6 +55,12 @@ Trestle.init(function(e, root) {
     .on('ajax:success', function(e, data, status, xhr) {
       var context = $(this).closest('[data-context]');
       var location = xhr.getResponseHeader("X-Trestle-Location");
+
+
+      var contentType = xhr.getResponseHeader("Content-Type");
+      if(contentType && contentType.split(";")[0] == 'text/javascript') {
+        return
+      }
 
       if (location) {
         // Retain current active tab
