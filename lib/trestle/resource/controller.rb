@@ -4,7 +4,10 @@ module Trestle
       before_action :load_collection, only: [:index]
       before_action :load_instance, only: [:show, :edit, :update, :destroy]
 
+      
+
       def index
+        authorize admin.model
         respond_to do |format|
           format.html
           format.json { render json: collection }
@@ -13,6 +16,7 @@ module Trestle
       end
 
       def new
+        authorize admin.model
         self.instance = admin.build_instance(params.key?(admin.parameter_name) ? admin.permitted_params(params) : {}, params)
 
         respond_to do |format|
@@ -23,6 +27,7 @@ module Trestle
       end
 
       def create
+        authorize admin.model
         self.instance = admin.build_instance(admin.permitted_params(params), params)
 
         if admin.save_instance(instance, params)
@@ -54,6 +59,7 @@ module Trestle
             format.js
           end
         else
+          authorize instance
           respond_to do |format|
             format.html
             format.json { render json: instance }
@@ -63,9 +69,11 @@ module Trestle
       end
 
       def edit
+        authorize instance
       end
 
       def update
+        authorize instance
         admin.update_instance(instance, admin.permitted_params(params), params)
 
         if admin.save_instance(instance, params)
@@ -90,6 +98,7 @@ module Trestle
       end
 
       def destroy
+        authorize instance
         success = admin.delete_instance(instance, params)
 
         respond_to do |format|
